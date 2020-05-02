@@ -2,9 +2,7 @@ version: '3.7'
 
 services:
   ghost:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.ghost
+    image: ghost:3.13.4-alpine
     container_name: ghost-container
     restart: always
     environment:
@@ -16,7 +14,6 @@ services:
       - ./content:/var/lib/ghost/content
       - ./config.base.json:/var/lib/ghost/config.development.json:ro
       - ./config.base.json:/var/lib/ghost/config.production.json:ro
-#      - ./sqlite:/var/lib/ghost/versions/2.31.1/content/data
     networks:
       - host
 
