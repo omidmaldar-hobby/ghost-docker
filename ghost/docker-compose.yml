@@ -20,24 +20,5 @@ services:
     networks:
       - host
 
-#  haproxy:
-#    build:
-#      context: .
-#      dockerfile: ./docker/Dockerfile.haproxy
-#    container_name: haproxy-container
-#    restart: always
-#    depends_on:
-#      - ghost
-#    ports:
-#      - 80:80
-#      - 443:443
-#    environment:
-#      - BALANCE=source
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - ../certificates/ssl:/etc/ssl
-#    networks:
-#      - host
-
 networks:
   host:
