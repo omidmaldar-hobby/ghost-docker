@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  ghost:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.ghost
+#      dockerfile: ./docker/Dockerfile
+#    entrypoint: ./docker/docker-entrypoint.sh
+    container_name: ghost-container
+    restart: always
+    environment:
+      - url=http://127.0.0.1:2368
+      - NODE_ENV=production
+    ports:
+      - 2368:2368
+    volumes:
+      - ./content:/var/lib/ghost/content
+      - ./config.base.json:/var/lib/ghost/config.development.json:ro
+      - ./config.base.json:/var/lib/ghost/config.production.json:ro
+#      - ./sqlite:/var/lib/ghost/versions/2.31.1/content/data
+    networks:
+      - host
+
+#  haproxy:
+#    build:
+#      context: .
+#      dockerfile: ./docker/Dockerfile.haproxy
+#    container_name: haproxy-container
+#    restart: always
+#    depends_on:
+#      - ghost
+#    ports:
+#      - 80:80
+#      - 443:443
+#    environment:
+#      - BALANCE=source
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - ../certificates/ssl:/etc/ssl
+#    networks:
+#      - host
+
+networks:
+  host:

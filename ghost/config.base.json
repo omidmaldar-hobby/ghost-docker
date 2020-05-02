@@ -1,0 +1,24 @@
+{
+  "server": {
+    "port": 2368,
+    "host": "0.0.0.0"
+  },
+  "logging": {
+    "transports": [
+      "file",
+      "stdout"
+    ]
+  },
+  "process": "systemd",
+  "paths": {
+    "contentPath": "/var/lib/ghost/content"
+  },
+  "database": {
+    "client": "sqlite3",
+    "connection": {
+      "filename": "content/data/ghost.sqlite.db"
+    },
+    "useNullAsDefault": true,
+    "debug": false
+  }
+}

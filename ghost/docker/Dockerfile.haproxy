@@ -1,0 +1,8 @@
+FROM haproxy:2.1.4-alpine
+
+# File Author / Maintainer
+MAINTAINER Omid
+
+# Copy custom configuration file from the current directory
+COPY ./docker/haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+
