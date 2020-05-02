@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.ghost
-#      dockerfile: ./docker/Dockerfile
-#    entrypoint: ./docker/docker-entrypoint.sh
     container_name: ghost-container
     restart: always
     environment:
