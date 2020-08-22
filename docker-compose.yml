@@ -14,6 +14,7 @@ services:
       - ./content:/var/lib/ghost/content
       - ./config.base.json:/var/lib/ghost/config.development.json:ro
       - ./config.base.json:/var/lib/ghost/config.production.json:ro
+      - /mnt/volume_ams3_01/ghost/content:/var/lib/ghost/content
     networks:
       - host
 
