@@ -2,20 +2,77 @@ version: '3.7'
 
 services:
   ghost:
-    image: ghost:3.13.4-alpine
-    container_name: ghost-container
-    restart: always
-    environment:
-      - url=http://127.0.0.1:2368
-      - NODE_ENV=production
-    ports:
-      - 2368:2368
+    image: ghost:${GHOST_VERSION}
+    container_name: ghost
+    restart: unless-stopped
+    env_file:
+      - env/ghost.env
+    expose:
+      - 2368
     volumes:
-      - ./content:/var/lib/ghost/content
-      - ./config.base.json:/var/lib/ghost/config.development.json:ro
-      - ./config.base.json:/var/lib/ghost/config.production.json:ro
+      - ${MOUNTING_VOLUME}/ghost/content:/var/lib/ghost/content
+      - ./conf/ghost.conf.json:/var/lib/ghost/config.production.json:ro
     networks:
-      - host
+      - proxy
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:ro
+      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - ${MOUNTING_VOLUME}/nginx/conf.d:/etc/nginx/conf.d:rw
+      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - proxy
+    restart: always
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-proxy-le
+    volumes:
+      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:rw
+      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    depends_on:
+      - nginx-proxy
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:${PGADMIN_VERSION}
+    env_file:
+      - env/pgadmin.env
+    volumes:
+      - ${MOUNTING_VOLUME}/pgadmin:/root/.pgadmin
+    expose:
+      - 80
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  excalidraw:
+    container_name: excalidraw
+    image: excalidraw/excalidraw:${EXCALIDRAW_VERSION}
+    env_file:
+      - env/excalidraw.env
+    expose:
+      - 80
+    restart: unless-stopped
+    volumes:
+      - ${MOUNTING_VOLUME}/excalidraw:/opt/node_app/app:delegated
+    networks:
+      - proxy
 
 networks:
-  host:
+  proxy:
+    name: nginx-proxy

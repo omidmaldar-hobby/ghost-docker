@@ -1,6 +1,0 @@
-# https://serversforhackers.com/c/using-ssl-certificates-with-haproxy
-
-
-sudo openssl x509 -req -days 365 -in omid.csr -signkey omid.key -out omid.crt
-
-sudo cat omid.crt omid.key | sudo tee omid.pem

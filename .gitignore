@@ -1,4 +1,6 @@
 /.debris/
 .idea
-/certificates/
 /content/
+/env/pgadmin.env
+/env/ghost.env
+/env/excalidraw.env
