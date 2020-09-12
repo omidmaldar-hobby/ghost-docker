@@ -73,6 +73,19 @@ services:
     networks:
       - proxy
 
+  librespeed:
+    image: linuxserver/librespeed
+    container_name: librespeed
+    env_file:
+      - env/librespeed.env
+    volumes:
+      - ${MOUNTING_VOLUME}/librespeed/config:/config
+    expose:
+      - 80
+    restart: unless-stopped
+    networks:
+      - proxy
+
 networks:
   proxy:
     name: nginx-proxy
