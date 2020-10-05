@@ -1,10 +1,20 @@
 version: '3.7'
-
+x-common-configs:
+  &common
+  logging:
+    options:
+      max-size: '12m'
+      max-file: '5'
+    driver: json-file
+  restart: unless-stopped
+  networks:
+    - proxy
+    -
 services:
   ghost:
+    <<: *common
     image: ghost:${GHOST_VERSION}
     container_name: ghost
-    restart: unless-stopped
     env_file:
       - env/ghost.env
     expose:
@@ -12,10 +22,9 @@ services:
     volumes:
       - ${MOUNTING_VOLUME}/ghost/content:/var/lib/ghost/content
       - ./conf/ghost.conf.json:/var/lib/ghost/config.production.json:ro
-    networks:
-      - proxy
 
   nginx-proxy:
+    <<: *common
     image: jwilder/nginx-proxy:alpine
     container_name: nginx-proxy
     labels:
@@ -30,11 +39,9 @@ services:
       - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
-    networks:
-      - proxy
-    restart: always
 
   letsencrypt:
+    <<: *common
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: nginx-proxy-le
     volumes:
@@ -43,48 +50,8 @@ services:
       - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
-    restart: always
     depends_on:
       - nginx-proxy
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:${PGADMIN_VERSION}
-    env_file:
-      - env/pgadmin.env
-    volumes:
-      - ${MOUNTING_VOLUME}/pgadmin:/root/.pgadmin
-    expose:
-      - 80
-    restart: unless-stopped
-    networks:
-      - proxy
-
-  excalidraw:
-    container_name: excalidraw
-    image: excalidraw/excalidraw:${EXCALIDRAW_VERSION}
-    env_file:
-      - env/excalidraw.env
-    expose:
-      - 80
-    restart: unless-stopped
-    volumes:
-      - ${MOUNTING_VOLUME}/excalidraw:/opt/node_app/app:delegated
-    networks:
-      - proxy
-
-  librespeed:
-    image: linuxserver/librespeed
-    container_name: librespeed
-    env_file:
-      - env/librespeed.env
-    volumes:
-      - ${MOUNTING_VOLUME}/librespeed/config:/config
-    expose:
-      - 80
-    restart: unless-stopped
-    networks:
-      - proxy
 
 networks:
   proxy:
