@@ -15,4 +15,5 @@ jobs:
         ssh_host: finndays.com
         ssh_private_key: ${{ secrets.FINNDAYS_COM_SSH_PRIVATE_KEY }}
         ssh_user: ${{ secrets.FINNDAYS_COM_SSH_USER }}
-        docker_compose_prefix:finndays_com
+        docker_compose_prefix: finndays_com
+        
