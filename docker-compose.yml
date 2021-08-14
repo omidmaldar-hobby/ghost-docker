@@ -25,7 +25,7 @@ services:
     expose:
       - 2368
     volumes:
-      - ${MOUNTING_VOLUME}/ghost/content:/var/lib/ghost/content
+      - /dev/xvdg/ghost/content:/var/lib/ghost/content
       - ./conf/config.production.json:/var/lib/ghost/config.production.json:ro
 
   nginx-proxy:
@@ -38,10 +38,10 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:ro
-      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
-      - ${MOUNTING_VOLUME}/nginx/conf.d:/etc/nginx/conf.d:rw
-      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /dev/xvdg/ssl/certs:/etc/nginx/certs:ro
+      - /dev/xvdg/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - /dev/xvdg/nginx/conf.d:/etc/nginx/conf.d:rw
+      - /dev/xvdg/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
 
@@ -50,9 +50,9 @@ services:
     image: jrcs/letsencrypt-nginx-proxy-companion:latest
     container_name: nginx-proxy-le
     volumes:
-      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:rw
-      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
-      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /dev/xvdg/ssl/certs:/etc/nginx/certs:rw
+      - /dev/xvdg/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - /dev/xvdg/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
     depends_on:
