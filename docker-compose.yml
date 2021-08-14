@@ -9,19 +9,24 @@ x-common-configs:
   restart: unless-stopped
   networks:
     - proxy
-    -
+
 services:
   ghost:
     <<: *common
-    image: ghost:${GHOST_VERSION}
-    container_name: ghost
-    env_file:
-      - env/ghost.env
+    image: ghost:4.11.0-alpine
+    container_name: ghost-4.11.0-alpine
+    environment:
+      - NODE_ENV=production
+      - url=https://journal.finndays.com
+      - VIRTUAL_HOST=journal.finndays.com
+      - LETSENCRYPT_HOST=journal.finndays.com
+      - LETSENCRYPT_EMAIL=journal@finndays.com
+      - LETSENCRYPT_TEST=true
     expose:
       - 2368
     volumes:
-      - ${MOUNTING_VOLUME}/ghost/content:/var/lib/ghost/content
-      - ./conf/ghost.conf.json:/var/lib/ghost/config.production.json:ro
+      - /dev/xvdg/ghost/content:/var/lib/ghost/content
+      - ./conf/config.production.json:/var/lib/ghost/config.production.json:ro
 
   nginx-proxy:
     <<: *common
@@ -33,21 +38,21 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:ro
-      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
-      - ${MOUNTING_VOLUME}/nginx/conf.d:/etc/nginx/conf.d:rw
-      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /dev/xvdg/ssl/certs:/etc/nginx/certs:ro
+      - /dev/xvdg/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - /dev/xvdg/nginx/conf.d:/etc/nginx/conf.d:rw
+      - /dev/xvdg/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
 
   letsencrypt:
     <<: *common
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
     container_name: nginx-proxy-le
     volumes:
-      - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:rw
-      - ${MOUNTING_VOLUME}/nginx/vhost.d:/etc/nginx/vhost.d:rw
-      - ${MOUNTING_VOLUME}/nginx/html:/usr/share/nginx/html:rw
+      - /dev/xvdg/ssl/certs:/etc/nginx/certs:rw
+      - /dev/xvdg/nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - /dev/xvdg/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
     depends_on:
