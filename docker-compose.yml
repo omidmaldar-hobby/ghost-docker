@@ -9,19 +9,24 @@ x-common-configs:
   restart: unless-stopped
   networks:
     - proxy
-    -
+
 services:
   ghost:
     <<: *common
-    image: ghost:${GHOST_VERSION}
-    container_name: ghost
-    env_file:
-      - env/ghost.env
+    image: ghost:4.11.0-alpine
+    container_name: ghost-4.11.0-alpine
+    environment:
+      - NODE_ENV=production
+      - url=https://journal.finndays.com
+      - VIRTUAL_HOST=journal.finndays.com
+      - LETSENCRYPT_HOST=journal.finndays.com
+      - LETSENCRYPT_EMAIL=journal@finndays.com
+      - LETSENCRYPT_TEST=true
     expose:
       - 2368
     volumes:
       - ${MOUNTING_VOLUME}/ghost/content:/var/lib/ghost/content
-      - ./conf/ghost.conf.json:/var/lib/ghost/config.production.json:ro
+      - ./conf/config.production.json:/var/lib/ghost/config.production.json:ro
 
   nginx-proxy:
     <<: *common
@@ -42,7 +47,7 @@ services:
 
   letsencrypt:
     <<: *common
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
     container_name: nginx-proxy-le
     volumes:
       - ${MOUNTING_VOLUME}/ssl/certs:/etc/nginx/certs:rw
